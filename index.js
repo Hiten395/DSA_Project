@@ -55,7 +55,9 @@ async function Display() {
 }
 
 
+// The Above function return everything required for communication between frontend and backend 
 
+// Use the test function to get familiar with the functions
 
 
 

@@ -3,36 +3,314 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <cmath>
 #include "httplib.h"
 #include "nlohmann/json.hpp"
 
 using json = nlohmann::json;
+using namespace std;
 
-// Global data structures
-std::stack<int> st;
-std::queue<int> qu;
-std::vector<int> ll;
+class Stack
+{
+    int top;
+    int size;
+    int* arr = nullptr;
 
-int currentDS = 0; // 1 = Stack, 2 = Queue, 3 = Linked List
+    public: 
+    Stack(int a)
+    {
+        cout << "Stack created";
+        size = a;
+        top = -1;
+        arr = new int[size];
+    }
+
+    void push(int val)
+    {
+        if (top == size - 1)
+        {
+            cout << "Stack Overflow" << endl;
+            return;
+        }
+        cout << "pushed" << std::endl;
+        arr[top + 1] = val;
+        top++;
+    }
+
+    int pop()
+    {
+        if (top == -1)
+        {
+            cout << "Stack Underflow" << endl;
+            return -1;
+        }
+        cout << "popped";
+        int temp = arr[top];
+        top--;
+        return temp;
+    }
+
+    int peek()
+    {
+        if (top == -1)
+        {
+            cout << "Stack is Empty" << endl;
+            return std::pow(2, 31) * -2;
+        }
+        return arr[top];
+    }
+
+    bool isEmpty()
+    {
+        cout << "check empty";
+        if (top == -1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool isFull()
+    {
+        cout << "check full";
+        if (top == size - 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    vector<int> display()
+    {
+        cout << "display";
+        vector<int> data;
+        for (int i = top; i >= 0; i--)
+        {
+            cout << arr[i] << " ";
+            data.push_back(arr[i]);
+        }
+        cout << endl;
+        return data;
+    }
+};
+
+class Queue
+{
+    int front;
+    int rear;
+    int count;
+    int size;
+    int* arr = nullptr;
+
+    public:
+    Queue(int a)
+    {
+        cout << "Queue created" << endl;
+        size = a;
+        front = 0;
+        rear = -1;
+        count = 0;
+        arr = new int[size];
+    }
+
+    ~Queue()
+    {
+        delete[] arr;
+    }
+
+    void push(int val)
+    {
+        if (count == size)
+        {
+            cout << "Queue Overflow" << endl;
+            return;
+        }
+        rear = (rear + 1) % size;
+        arr[rear] = val;
+        count++;
+        cout << "pushed" << endl;
+    }
+
+    int pop()
+    {
+        if (count == 0)
+        {
+            cout << "Queue Underflow" << endl;
+            return -1;
+        }
+        int temp = arr[front];
+        front = (front + 1) % size;
+        count--;
+        cout << "popped" << endl;
+        return temp;
+    }
+
+    int peek()
+    {
+        if (count == 0)
+        {
+            cout << "Queue is Empty" << endl;
+            return std::pow(2, 31) * -2;
+        }
+        return arr[front];
+    }
+
+    bool isEmpty()
+    {
+        cout << "check empty" << endl;
+        return count == 0;
+    }
+
+    bool isFull()
+    {
+        cout << "check full" << endl;
+        return count == size;
+    }
+
+    vector<int> display()
+    {
+        cout << "display" << endl;
+        vector<int> data;
+        for (int i = 0; i < count; i++)
+        {
+            int idx = (front + i) % size;
+            cout << arr[idx] << " ";
+            data.push_back(arr[idx]);
+        }
+        cout << endl;
+        return data;
+    }
+};
+
+class Node
+{
+    public:
+    int val;
+    Node* pre;
+    Node* next;
+
+    Node(int a, Node* b, Node* c)
+    {
+        val = a;
+        pre = b;
+        next = c;
+    }
+};
+
+class Linked
+{
+    Node* dummyHead = nullptr;
+    Node* dummyTail = nullptr;
+    int maxSize = 0;
+    int count = 0;
+
+    public:
+    Linked(int a)
+    {
+        cout << "Linked List created" << endl;
+        maxSize = a;
+        dummyHead = new Node(0, nullptr, nullptr);
+        dummyTail = new Node(0, dummyHead, nullptr);
+        dummyHead->next = dummyTail;
+    }
+
+    ~Linked()
+    {
+        Node* current = dummyHead;
+        while (current)
+        {
+            Node* next = current->next;
+            delete current;
+            current = next;
+        }
+    }
+
+    void push(int val)
+    {
+        if (count == maxSize)
+        {
+            cout << "Linked List Overflow" << endl;
+            return;
+        }
+        Node* node = new Node(val, dummyTail->pre, dummyTail);
+        dummyTail->pre->next = node;
+        dummyTail->pre = node;
+        count++;
+        cout << "pushed" << endl;
+    }
+
+    int pop()
+    {
+        if (count == 0)
+        {
+            cout << "Linked List Underflow" << endl;
+            return -1;
+        }
+        Node* node = dummyTail->pre;
+        int temp = node->val;
+        node->pre->next = dummyTail;
+        dummyTail->pre = node->pre;
+        delete node;
+        count--;
+        cout << "popped" << endl;
+        return temp;
+    }
+
+    int peek()
+    {
+        if (count == 0)
+        {
+            cout << "Linked List is Empty" << endl;
+            return std::pow(2, 31) * -2;
+        }
+        return dummyTail->pre->val;
+    }
+
+    bool isEmpty()
+    {
+        cout << "check empty" << endl;
+        return count == 0;
+    }
+
+    bool isFull()
+    {
+        cout << "check full" << endl;
+        return count == maxSize;
+    }
+
+    vector<int> display()
+    {
+        cout << "display" << endl;
+        vector<int> data;
+        Node* current = dummyHead->next;
+        while (current != dummyTail)
+        {
+            cout << current->val << " ";
+            data.push_back(current->val);
+            current = current->next;
+        }
+        cout << endl;
+        return data;
+    }
+};
+
+int currentDS = 0;
 int maxSize = 0;
+Stack* stackDS = nullptr;
+Queue* queueDS = nullptr;
+Linked* linkedDS = nullptr;
 
-// Helper functions
-bool isFull() {
-    if (currentDS == 1) return st.size() >= maxSize;
-    if (currentDS == 2) return qu.size() >= maxSize;
-    if (currentDS == 3) return ll.size() >= maxSize;
-    return false;
-}
-
-bool isEmpty() {
-    if (currentDS == 1) return st.empty();
-    if (currentDS == 2) return qu.empty();
-    if (currentDS == 3) return ll.empty();
-    return true;
-}
 
 int main()
 {
+    //Queue queue;
+    //Linked linked;
     httplib::Server server;
 
     server.set_default_headers({
@@ -56,101 +334,237 @@ int main()
             currentDS = val;
             maxSize = size;
 
-            // Clear all structures
-            while (!st.empty()) st.pop();
-            while (!qu.empty()) qu.pop();
-            ll.clear();
+            // Clear all structures before creating a new one.
+            if (stackDS)
+            {
+                delete stackDS;
+                stackDS = nullptr;
+            }
+            if (queueDS)
+            {
+                delete queueDS;
+                queueDS = nullptr;
+            }
+            if (linkedDS)
+            {
+                delete linkedDS;
+                linkedDS = nullptr;
+            }
 
             if (val == 1)
+            {
+                std::cout << "New Stack Created" << std::endl;
                 response = {{"message", "New Stack Created"}};
+                currentDS = 1;
+                stackDS = new Stack(size);
+            }
             else if (val == 2)
+            {
+                std::cout << "New Queue Created" << std::endl;
                 response = {{"message", "New Queue Created"}};
+                currentDS = 2;
+                queueDS = new Queue(size);
+            }
             else if (val == 3)
+            {
+                std::cout << "New Linked List Created" << std::endl;
                 response = {{"message", "New Linked List Created"}};
+                currentDS = 3;
+                linkedDS = new Linked(size);
+            }
             else
+            {
                 response = {{"message", "Invalid Value"}};
+            }
         }
         else if (opr == "Push")
         {
-            if (isFull()) {
-                response = {{"message", "Structure is Full"}};
-            } else {
-                if (currentDS == 1) {
-                    st.push(val);
-                } else if (currentDS == 2) {
-                    qu.push(val);
-                } else if (currentDS == 3) {
-                    ll.push_back(val);
-                }
-                response = {{"message", "Pushed Successfully"}};
+            if (currentDS == 1 && stackDS)
+            {
+                std::cout << "pushing in stack " << val << std::endl;
+                stackDS->push(val);
             }
+            else if (currentDS == 2 && queueDS)
+            {
+                std::cout << "pushing in queue " << val << std::endl;
+                queueDS->push(val);
+            }
+            else if (currentDS == 3 && linkedDS)
+            {
+                std::cout << "pushing in linked list " << val << std::endl;
+                linkedDS->push(val);
+            }
+            else
+            {
+                response = {{"message", "No data structure selected"}};
+                res.set_content(response.dump(), "application/json");
+                return;
+            }
+            response = {{"message", "Pushed Successfully"}};
         }
         else if (opr == "Pop")
         {
-            if (isEmpty()) {
-                response = {{"message", "Structure is Empty"}};
-            } else {
-                int a;
-                if (currentDS == 1) {
-                    a = st.top();
-                    st.pop();
-                } else if (currentDS == 2) {
-                    a = qu.front();
-                    qu.pop();
-                } else if (currentDS == 3) {
-                    a = ll.back();
-                    ll.pop_back();
-                }
-                response = {{"message", a}};
+            if (currentDS == 1 && stackDS)
+            {
+                std::cout << "popping from stack" << std::endl;
+                stackDS->pop();
             }
+            else if (currentDS == 2 && queueDS)
+            {
+                std::cout << "popping from queue" << std::endl;
+                queueDS->pop();
+            }
+            else if (currentDS == 3 && linkedDS)
+            {
+                std::cout << "popping from linked list" << std::endl;
+                linkedDS->pop();
+            }
+            else
+            {
+                response = {{"message", "No data structure selected"}};
+                res.set_content(response.dump(), "application/json");
+                return;
+            }
+            response = {{"message", "last element popped"}};
         }
         else if (opr == "Peek")
         {
-            if (isEmpty()) {
-                response = {{"message", "Structure is Empty"}};
-            } else {
-                int a;
-                if (currentDS == 1) {
-                    a = st.top();
-                } else if (currentDS == 2) {
-                    a = qu.front();
-                } else if (currentDS == 3) {
-                    a = ll.back();
+            int a = 0;
+            if (currentDS == 1 && stackDS)
+            {
+                if (!stackDS->isEmpty())
+                {
+                    a = stackDS->peek();
+                    response = {{"message", a}};
                 }
-                response = {{"message", a}};
+                else
+                {
+                    response = {{"message", "empty DS"}};
+                }
+            }
+            else if (currentDS == 2 && queueDS)
+            {
+                if (!queueDS->isEmpty())
+                {
+                    a = queueDS->peek();
+                    response = {{"message", a}};
+                }
+                else
+                {
+                    response = {{"message", "empty DS"}};
+                }
+            }
+            else if (currentDS == 3 && linkedDS)
+            {
+                if (!linkedDS->isEmpty())
+                {
+                    a = linkedDS->peek();
+                    response = {{"message", a}};
+                }
+                else
+                {
+                    response = {{"message", "empty DS"}};
+                }
+            }
+            else
+            {
+                response = {{"message", "No data structure selected"}};
             }
         }
         else if (opr == "Display")
         {
             std::vector<int> data;
 
-            if (currentDS == 1) {
-                std::stack<int> temp = st;
-                while (!temp.empty()) {
-                    data.push_back(temp.top());
-                    temp.pop();
+            if (currentDS == 1 && stackDS)
+            {
+                if (!stackDS->isEmpty())
+                {
+                    data = stackDS->display();
+                    response = {{"message", data}};
                 }
-            } 
-            else if (currentDS == 2) {
-                std::queue<int> temp = qu;
-                while (!temp.empty()) {
-                    data.push_back(temp.front());
-                    temp.pop();
+                else
+                {
+                    response = {{"message", "empty DS"}};
                 }
-            } 
-            else if (currentDS == 3) {
-                data = ll;
             }
-
-            response = {{"message", data}};
+            else if (currentDS == 2 && queueDS)
+            {
+                if (!queueDS->isEmpty())
+                {
+                    data = queueDS->display();
+                    response = {{"message", data}};
+                }
+                else
+                {
+                    response = {{"message", "empty DS"}};
+                }
+            }
+            else if (currentDS == 3 && linkedDS)
+            {
+                if (!linkedDS->isEmpty())
+                {
+                    data = linkedDS->display();
+                    response = {{"message", data}};
+                }
+                else
+                {
+                    response = {{"message", "empty DS"}};
+                }
+            }
+            else
+            {
+                response = {{"message", "No data structure selected"}};
+            }
         }
         else if (opr == "Full")
         {
-            response = {{"message", isFull()}};
+            bool state = false;
+
+            if (currentDS == 1 && stackDS)
+            {
+                state = stackDS->isFull();
+            }
+            else if (currentDS == 2 && queueDS)
+            {
+                state = queueDS->isFull();
+            }
+            else if (currentDS == 3 && linkedDS)
+            {
+                state = linkedDS->isFull();
+            }
+            else
+            {
+                response = {{"message", "No data structure selected"}};
+                res.set_content(response.dump(), "application/json");
+                return;
+            }
+
+            response = {{"message", state}};
         }
         else if (opr == "Empty")
         {
-            response = {{"message", isEmpty()}};
+            bool state = false;
+
+            if (currentDS == 1 && stackDS)
+            {
+                state = stackDS->isEmpty();
+            }
+            else if (currentDS == 2 && queueDS)
+            {
+                state = queueDS->isEmpty();
+            }
+            else if (currentDS == 3 && linkedDS)
+            {
+                state = linkedDS->isEmpty();
+            }
+            else
+            {
+                response = {{"message", "No data structure selected"}};
+                res.set_content(response.dump(), "application/json");
+                return;
+            }
+
+            response = {{"message", state}};
         }
         else
         {

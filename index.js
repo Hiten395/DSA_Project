@@ -3,60 +3,40 @@
 
 const BASE_URL = "http://localhost:8080";
 
-async function New(val, size) {
-    var response = await fetch(BASE_URL + "/New/" + val + "/" + size, {
+async function requestBackend(opr, val = 0, size = 0) {
+    const response = await fetch(`${BASE_URL}/${opr}/${val}/${size}`, {
         method: "POST"
     });
-    var data = await response.json();
+    const data = await response.json();
     return data.message;
+}
+
+async function New(val, size) {
+    return requestBackend("New", val, size);
 }
 
 async function Push(val) {
-    var response = await fetch(BASE_URL + "/Push/" + val + "/" + 0, {
-        method: "POST"
-    });
-    var data = await response.json();
-    return data.message;
+    return requestBackend("Push", val, 0);
 }
 
 async function Pop() {
-    var response = await fetch(BASE_URL + "/Pop/" + 0 + "/" + 0, {
-        method: "POST"
-    });
-    var data = await response.json();
-    return data.message;
+    return requestBackend("Pop", 0, 0);
 }
 
 async function Peek() {
-    var response = await fetch(BASE_URL + "/Peek/" + 0 + "/" + 0, {
-        method: "POST"
-    });
-    var data = await response.json();
-    return data.message;
+    return requestBackend("Peek", 0, 0);
 }
 
 async function IsEmpty() {
-    var response = await fetch(BASE_URL + "/Empty/" + 0 + "/" + 0, {
-        method: "POST"
-    });
-    var data = await response.json();
-    return data.message;
+    return requestBackend("Empty", 0, 0);
 }
 
 async function IsFull() {
-    var response = await fetch(BASE_URL + "/Full/" + 0 + "/" + 0, {
-        method: "POST"
-    });
-    var data = await response.json();
-    return data.message;
+    return requestBackend("Full", 0, 0);
 }
 
 async function Display() {
-    var response = await fetch(BASE_URL + "/Display/" + 0 + "/" + 0, {
-        method: "POST"
-    });
-    var data = await response.json();
-    return data.message;
+    return requestBackend("Display", 0, 0);
 }
 
 
@@ -123,6 +103,7 @@ async function createDS() {
         var visual = document.getElementById("visual");
         visual.className = "visual " + getVisualClass(dsValue);
         visual.innerHTML = ""; // clear preview boxes
+        await refreshVisual();
     } catch (err) {
         setOutput("Error: Could not connect to server.");
         console.error(err);
@@ -195,7 +176,11 @@ async function handleDisplay() {
 async function handleEmpty() {
     try {
         var result = await IsEmpty();
-        setOutput(result ? "Yes, it is empty." : "No, it is not empty.");
+        if (typeof result === "boolean") {
+            setOutput(result ? "Yes, it is empty." : "No, it is not empty.");
+        } else {
+            setOutput(result);
+        }
     } catch (err) {
         setOutput("Error: Could not connect to server.");
         console.error(err);
@@ -206,7 +191,11 @@ async function handleEmpty() {
 async function handleFull() {
     try {
         var result = await IsFull();
-        setOutput(result ? "Yes, it is full." : "No, it is not full.");
+        if (typeof result === "boolean") {
+            setOutput(result ? "Yes, it is full." : "No, it is not full.");
+        } else {
+            setOutput(result);
+        }
     } catch (err) {
         setOutput("Error: Could not connect to server.");
         console.error(err);

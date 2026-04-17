@@ -1,186 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSA Visualizer</title>
-
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: white;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-}
-
-h1 {
-    margin: 20px 0;
-}
-
-.container {
-    width: 600px;
-    margin: auto;
-    background: #1e293b;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-}
-
-.section {
-    margin-bottom: 20px;
-}
-
-input, select, button {
-    padding: 10px;
-    margin: 5px;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-}
-
-input, select {
-    width: 120px;
-}
-
-button {
-    background: #38bdf8;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0ea5e9;
-}
-
-/* Output box */
-.output {
-    margin-top: 15px;
-    padding: 12px;
-    background: #020617;
-    border-radius: 6px;
-    min-height: 40px;
-}
-
-/* Visualization area */
-.visual {
-    margin-top: 25px;
-    min-height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-/* Individual nodes */
-.box {
-    background: #22c55e;
-    padding: 15px;
-    border-radius: 6px;
-    min-width: 45px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.box:hover {
-    transform: scale(1.1);
-}
-
-/* Stack style */
-.stack {
-    flex-direction: column-reverse;
-    align-items: center;
-}
-
-/* Queue style */
-.queue {
-    flex-direction: row;
-}
-
-/* Linked list style */
-.linked {
-    flex-direction: row;
-}
-
-.linked .box::after {
-    content: "→";
-    margin-left: 10px;
-    color: #fff;
-}
-
-.linked .box:last-child::after {
-    content: "";
-}
-</style>
-
+    <meta charset="UTF-8">
+    <title>Data Structures Visualization</title>
+    <!-- Dark IDE-like styling -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
-
-<h1>DSA Visualizer</h1>
-
-<div class="container">
-
-    <!-- Create DS -->
-    <div class="section">
-        <h3>Create Data Structure</h3>
-        <select id="ds">
-            <option value="1">Stack</option>
-            <option value="2">Queue</option>
-            <option value="3">Linked List</option>
-        </select>
-
-        <input type="number" id="size" placeholder="Size">
-
-        <button onclick="createDS()">Create</button>
-    </div>
-
-    <!-- Operations -->
-    <div class="section">
-        <h3>Operations</h3>
-        <input type="number" id="value" placeholder="Value">
-
-        <br>
-
-        <button onclick="handlePush()">Push</button>
-        <button onclick="handlePop()">Pop</button>
-        <button onclick="handlePeek()">Peek</button>
-
-        <br>
-
-        <button onclick="handleDisplay()">Display</button>
-        <button onclick="handleEmpty()">Is Empty</button>
-        <button onclick="handleFull()">Is Full</button>
-    </div>
-
-    <!-- Output -->
-    <div class="section">
-        <h3>Output</h3>
-        <div class="output" id="output">
-            Your results will appear here...
+    <!-- Home Menu -->
+    <div id="home-view" class="view active">
+        <h1>Data Structures Visualizer</h1>
+        <p class="home-sub">Select an interactive module to explore C++ Data Structures</p>
+        <div class="menu-cards">
+            <div class="card" onclick="app.loadDS('LinkedList')">
+                <div class="card-icon">&#8734;</div>
+                Linked List
+            </div>
+            <div class="card" onclick="app.loadDS('Stack')">
+                <div class="card-icon">&#9776;</div>
+                Stack
+            </div>
+            <div class="card" onclick="app.loadDS('Queue')">
+                <div class="card-icon">&#10145;</div>
+                Queue
+            </div>
         </div>
+
+        <footer class="home-footer">
+            <p><strong>Data Structures Visualizer</strong> - An interactive learning tool created by Aditya & Hiten</p>
+            <div class="social-links">
+                <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </div>
+        </footer>
     </div>
 
-    <!-- Visualization -->
-    <div class="section">
-        <h3>Visualization</h3>
-        <!-- Change class dynamically: stack / queue / linked -->
-        <div class="visual stack" id="visual">
-            <!-- Example boxes (for design preview only) -->
-            <!-- Remove later when JS renders real data -->
-            <div class="box">1</div>
-            <div class="box">2</div>
-            <div class="box">3</div>
-        </div>
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="view">
+        <nav class="top-nav">
+            <button class="nav-btn" onclick="app.goHome()">&#8592; Back to Home</button>
+        </nav>
+        
+        <header class="ds-header">
+            <h1 id="ds-title">Linked List Visualization</h1>
+            <p id="ds-subtitle">Visualize operations on a singly linked list data structure</p>
+        </header>
+
+        <main class="dashboard-grid">
+            <div class="left-col">
+                <div class="panel vis-panel">
+                    <h2>Visualization</h2>
+                    <p class="panel-sub">Visual representation of the data structure</p>
+                    <div class="vis-canvas" id="vis-canvas">
+                        <!-- Node elements go here dynamically -->
+                    </div>
+                </div>
+                
+                <div class="panel code-panel">
+                    <h2>&lt;&gt; Implementation Code</h2>
+                    <p class="panel-sub">Select an operation to reveal its C++ implementation</p>
+                    <div class="code-container">
+                        <pre><code id="code-snippet-box"></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="panel ops-panel">
+                    <h2>Operations</h2>
+                    <p class="panel-sub">Perform operations on the data structure</p>
+                    
+                    <div class="tabs" id="ops-tabs">
+                        <!-- Dynamically filled tabs -->
+                    </div>
+                    
+                    <div class="tab-content" id="ops-content">
+                        <!-- Dynamically filled operation forms -->
+                    </div>
+                    
+                    <div id="log-message" class="ops-log"></div>
+                </div>
+                
+                <div class="panel props-panel">
+                    <h2 style="font-size: 1.1rem; margin-bottom: 15px;">&#9432; Properties</h2>
+                    <div id="ds-properties">
+                        <!-- Dynamically filled properties -->
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-</div>
-
-<!-- Your JS file -->
-<script src="index.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>

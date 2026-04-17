@@ -25,29 +25,30 @@ class Stack
         arr = new int[size];
     }
 
-    void push(int val)
+    bool push(int val)
     {
         if (top == size - 1)
         {
             cout << "Stack Overflow" << endl;
-            return;
+            return false;
         }
         cout << "pushed" << std::endl;
         arr[top + 1] = val;
         top++;
+        return true;
     }
 
-    int pop()
+    bool pop()
     {
         if (top == -1)
         {
             cout << "Stack Underflow" << endl;
-            return -1;
+            return false;
         }
         cout << "popped";
         int temp = arr[top];
         top--;
-        return temp;
+        return true;
     }
 
     int peek()
@@ -124,31 +125,32 @@ class Queue
         delete[] arr;
     }
 
-    void push(int val)
+    bool push(int val)
     {
         if (count == size)
         {
             cout << "Queue Overflow" << endl;
-            return;
+            return false;
         }
         rear = (rear + 1) % size;
         arr[rear] = val;
         count++;
         cout << "pushed" << endl;
+        return true;
     }
 
-    int pop()
+    bool pop()
     {
         if (count == 0)
         {
             cout << "Queue Underflow" << endl;
-            return -1;
+            return false;
         }
         int temp = arr[front];
         front = (front + 1) % size;
         count--;
         cout << "popped" << endl;
-        return temp;
+        return true;
     }
 
     int peek()
@@ -231,26 +233,27 @@ class Linked
         }
     }
 
-    void push(int val)
+    bool push(int val)
     {
         if (count == maxSize)
         {
             cout << "Linked List Overflow" << endl;
-            return;
+            return false;
         }
         Node* node = new Node(val, dummyTail->pre, dummyTail);
         dummyTail->pre->next = node;
         dummyTail->pre = node;
         count++;
         cout << "pushed" << endl;
+        return true;
     }
 
-    int pop()
+    bool pop()
     {
         if (count == 0)
         {
             cout << "Linked List Underflow" << endl;
-            return -1;
+            return false;
         }
         Node* node = dummyTail->pre;
         int temp = node->val;
@@ -259,7 +262,7 @@ class Linked
         delete node;
         count--;
         cout << "popped" << endl;
-        return temp;
+        return true;
     }
 
     int peek()
@@ -309,8 +312,6 @@ Linked* linkedDS = nullptr;
 
 int main()
 {
-    //Queue queue;
-    //Linked linked;
     httplib::Server server;
 
     server.set_default_headers({
@@ -379,20 +380,21 @@ int main()
         }
         else if (opr == "Push")
         {
+            bool state = true;
             if (currentDS == 1 && stackDS)
             {
                 std::cout << "pushing in stack " << val << std::endl;
-                stackDS->push(val);
+                state = stackDS->push(val);
             }
             else if (currentDS == 2 && queueDS)
             {
                 std::cout << "pushing in queue " << val << std::endl;
-                queueDS->push(val);
+                state = queueDS->push(val);
             }
             else if (currentDS == 3 && linkedDS)
             {
                 std::cout << "pushing in linked list " << val << std::endl;
-                linkedDS->push(val);
+                state = linkedDS->push(val);
             }
             else
             {
@@ -400,24 +402,30 @@ int main()
                 res.set_content(response.dump(), "application/json");
                 return;
             }
-            response = {{"message", "Pushed Successfully"}};
+            if (state)
+            {
+                response = {{"message", "Pushed Successfully"}};
+            }else{
+                response = {{"message", "Data Structure full"}};
+            }
         }
         else if (opr == "Pop")
         {
+            bool state;
             if (currentDS == 1 && stackDS)
             {
                 std::cout << "popping from stack" << std::endl;
-                stackDS->pop();
+                state = stackDS->pop();
             }
             else if (currentDS == 2 && queueDS)
             {
                 std::cout << "popping from queue" << std::endl;
-                queueDS->pop();
+                state = queueDS->pop();
             }
             else if (currentDS == 3 && linkedDS)
             {
                 std::cout << "popping from linked list" << std::endl;
-                linkedDS->pop();
+                state = linkedDS->pop();
             }
             else
             {
@@ -425,7 +433,13 @@ int main()
                 res.set_content(response.dump(), "application/json");
                 return;
             }
-            response = {{"message", "last element popped"}};
+            if (state)
+            {
+                response = {{"message", "last element popped"}};
+            }
+            else {
+                response = {{"message", "Data Structure Empty"}};
+            }
         }
         else if (opr == "Peek")
         {

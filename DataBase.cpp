@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <queue>
-#include <stack>
 #include <cmath>
 #include "httplib.h"
 #include "nlohmann/json.hpp"
@@ -19,7 +17,7 @@ class Stack
     public: 
     Stack(int a)
     {
-        cout << "Stack created";
+        cout << "Stack created" << std::endl;
         size = a;
         top = -1;
         arr = new int[size];
@@ -45,7 +43,7 @@ class Stack
             cout << "Stack Underflow" << endl;
             return false;
         }
-        cout << "popped";
+        cout << "popped" << std::endl;
         int temp = arr[top];
         top--;
         return true;
@@ -63,7 +61,7 @@ class Stack
 
     bool isEmpty()
     {
-        cout << "check empty";
+        cout << "check empty" << std::endl;
         if (top == -1)
         {
             return true;
@@ -76,7 +74,7 @@ class Stack
 
     bool isFull()
     {
-        cout << "check full";
+        cout << "check full" << std::endl;
         if (top == size - 1)
         {
             return true;
@@ -89,7 +87,7 @@ class Stack
 
     vector<int> display()
     {
-        cout << "display";
+        cout << "display" << std::endl;
         vector<int> data;
         for (int i = top; i >= 0; i--)
         {
